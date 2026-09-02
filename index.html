@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonification of Pi - Advanced Tuning</title>
+    
+    <link rel="stylesheet" href="styles.css">
+
+</head>
+<body>
+
+<div class="container">
+    <h2>The Sound of Pi</h2>
+
+    <div class="digit-display" id="display"></div>
+
+    <div class="controls">
+        <button id="playPauseBtn" title="Play/Pause">
+            <svg id="playIcon" viewBox="0 0 24 24" width="32" height="32">
+                <path fill="currentColor" d="M8 5v14l11-7z"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="settings-grid">
+        <!-- Instrument & Timing -->
+        <div class="settings-panel">
+            <h3>Instrument & Timing</h3>
+            <div class="input-group">
+                <label for="instrument">Instrument:</label>
+                <select id="instrument" class="select-instrument">
+                    <option value="piano">🎹 Piano</option>
+                    <option value="violin">🎻 Violin</option>
+                    <option value="guitar">🎸 Guitar</option>
+                    <option value="flute">🪈 Flute</option>
+                    <option value="marimba">🪵 Marimba</option>
+                    <option value="synth">👾 8-Bit Synth</option>
+                    <option value="drums">🥁 Drums</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="startIndex">Start Index:</label>
+                <input type="number" id="startIndex" value="0" min="0" max="99">
+            </div>
+            <div class="input-group">
+                <label for="tempo">Tempo (ms):</label>
+                <input type="number" id="tempo" value="250" min="50" max="1000" step="10">
+            </div>
+            <div class="input-group">
+                <label for="attackTime">Note Start (Attack):</label>
+                <div class="slider-wrapper">
+                    <button type="button" class="slider-btn" data-target="attackTime" data-dir="-1" title="Decrease Note Start" aria-label="Decrease Note Start">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                    <input type="range" id="attackTime" min="0.01" max="0.3" step="0.01" value="0.06">
+                    <button type="button" class="slider-btn" data-target="attackTime" data-dir="1" title="Increase Note Start" aria-label="Increase Note Start">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                </div>
+                <span class="value-display" id="attackVal">0.06s</span>
+            </div>
+            <div class="input-group">
+                <label for="releaseTime">Note End (Release):</label>
+                <div class="slider-wrapper">
+                    <button type="button" class="slider-btn" data-target="releaseTime" data-dir="-1" title="Decrease Note End" aria-label="Decrease Note End">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                    <input type="range" id="releaseTime" min="0.05" max="3.0" step="0.05" value="0.60">
+                    <button type="button" class="slider-btn" data-target="releaseTime" data-dir="1" title="Increase Note End" aria-label="Increase Note End">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                </div>
+                <span class="value-display" id="releaseVal">0.60s</span>
+            </div>
+        </div>
+
+        <!-- Pitch & Tuning -->
+        <div class="settings-panel">
+            <h3>Pitch & Tuning</h3>
+            <div class="input-group" title="Shift the overall pitch up or down by full octaves">
+                <label for="octaveShift">Octave Shift:</label>
+                <div class="slider-wrapper">
+                    <button type="button" class="slider-btn" data-target="octaveShift" data-dir="-1" title="Decrease Octave Shift" aria-label="Decrease Octave Shift">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                    <input type="range" id="octaveShift" min="-3" max="3" step="1" value="0">
+                    <button type="button" class="slider-btn" data-target="octaveShift" data-dir="1" title="Increase Octave Shift" aria-label="Increase Octave Shift">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                </div>
+                <span class="value-display" id="octaveVal">0</span>
+            </div>
+            <div class="input-group" title="Shift pitch by half-steps (semitones)">
+                <label for="semitoneShift">Transpose (Semitones):</label>
+                <div class="slider-wrapper">
+                    <button type="button" class="slider-btn" data-target="semitoneShift" data-dir="-1" title="Decrease Transpose" aria-label="Decrease Transpose">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                    <input type="range" id="semitoneShift" min="-11" max="11" step="1" value="0">
+                    <button type="button" class="slider-btn" data-target="semitoneShift" data-dir="1" title="Increase Transpose" aria-label="Increase Transpose">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                </div>
+                <span class="value-display" id="semitoneVal">0</span>
+            </div>
+            <div class="input-group" title="Stretch or compress the musical distance between digits">
+                <label for="spreadFactor">Interval Spread:</label>
+                <div class="slider-wrapper">
+                    <button type="button" class="slider-btn" data-target="spreadFactor" data-dir="-1" title="Decrease Interval Spread" aria-label="Decrease Interval Spread">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                    <input type="range" id="spreadFactor" min="0.1" max="3.0" step="0.1" value="1.0">
+                    <button type="button" class="slider-btn" data-target="spreadFactor" data-dir="1" title="Increase Interval Spread" aria-label="Increase Interval Spread">
+                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                </div>
+                <span class="value-display" id="spreadVal">1.0x</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="config-controls">
+        <button id="saveConfigBtn" class="btn-action" title="Save current settings to localStorage">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+            </svg>
+            Save Config
+        </button>
+        <button id="resetConfigBtn" class="btn-action btn-secondary" title="Reset all settings to default values">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+            </svg>
+            Reset Defaults
+        </button>
+    </div>
+    <div class="config-status" id="configStatus"></div>
+
+    <div class="note-info" id="noteInfo">Press Play to initialize Web Audio</div>
+</div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
