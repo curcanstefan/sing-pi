@@ -16,18 +16,23 @@
     const playPauseBtn = document.getElementById('playPauseBtn');
     const startIndexInput = document.getElementById('startIndex');
     const tempoInput = document.getElementById('tempo');
-    const instrumentSelect = document.getElementById('instrument');
-
     // Slider Elements
-    const attackInput = document.getElementById('attackTime');
-    const releaseInput = document.getElementById('releaseTime');
-    const octaveInput = document.getElementById('octaveShift');
-    const semitoneInput = document.getElementById('semitoneShift');
-    const spreadInput = document.getElementById('spreadFactor');
     const noteInfo = document.getElementById('noteInfo');
 
     const playIconSVG = `<svg viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>`;
     const pauseIconSVG = `<svg viewBox="0 0 24 24" width="32" height="32"><path fill="currentColor" d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+
+    // Help icon click-to-toggle tooltips
+    document.addEventListener('click', (e) => {
+        const icon = e.target.closest('.help-icon');
+        document.querySelectorAll('.help-icon.active').forEach(el => {
+            if (el !== icon) el.classList.remove('active');
+        });
+        if (icon) {
+            e.stopPropagation();
+            icon.classList.toggle('active');
+        }
+    });
 
     function initAudio() {
         if (!audioContext) {
@@ -38,34 +43,6 @@
         }
     }
 
-    // Mathematical Pitch Calculation
-    function calculatePitch(digit) {
-        const octaveShift = parseInt(octaveInput.value, 10);
-        const semitoneShift = parseInt(semitoneInput.value, 10);
-        const spread = parseFloat(spreadInput.value);
-
-        const baseInterval = baseIntervals[digit];
-
-        // Base MIDI note 60 is Middle C (C4)
-        const midiNote = 60 + (baseInterval * spread) + (octaveShift * 12) + semitoneShift;
-
-        // Convert MIDI to Frequency (Standard A4 = 440Hz tuning)
-        const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
-
-        // Figure out the closest musical note name for the display
-        const roundedMidi = Math.round(midiNote);
-        const noteName = noteNames[roundedMidi % 12];
-        const octave = Math.floor(roundedMidi / 12) - 1;
-
-        // If tuning is spread, calculate if we are sharp/flat in cents
-        const cents = Math.round((midiNote - roundedMidi) * 100);
-        let centsStr = (cents === 0) ? '' : (cents > 0 ? ` +${cents}c` : ` ${cents}c`);
-
-        return {
-            freq: freq,
-            label: `${noteName}${octave}${centsStr}`
-        };
-    }
 
     let noiseBuffer = null;
     function getNoiseBuffer(ctx) {
@@ -79,6 +56,7 @@
         }
         return noiseBuffer;
     }
+
 
     function playPiano(freq, now, attackTime, releaseTime) {
         const totalDuration = attackTime + releaseTime;
@@ -491,83 +469,71 @@
         }
     }
 
-    function playTone(digit) {
-        if (!audioContext) return;
 
-        const inst = instrumentSelect ? instrumentSelect.value : 'piano';
-        const pitchData = calculatePitch(digit);
-        const attackTime = parseFloat(attackInput.value);
-        const releaseTime = parseFloat(releaseInput.value);
+    // Mathematical Pitch Calculation
+    
+    function calculatePitch(digit, stream) {
+        const octaveShift = parseInt(stream.octaveShift.value, 10) || 0;
+        const semitoneShift = parseInt(stream.semitoneShift.value, 10) || 0;
+        const spread = parseFloat(stream.spreadFactor.value) || 1.0;
+
+        const baseInterval = baseIntervals[digit];
+
+        const midiNote = 60 + (baseInterval * spread) + (octaveShift * 12) + semitoneShift;
+        const freq = 440 * Math.pow(2, (midiNote - 69) / 12);
+
+        const roundedMidi = Math.round(midiNote);
+        const noteName = noteNames[roundedMidi % 12];
+        const octave = Math.floor(roundedMidi / 12) - 1;
+
+        const cents = Math.round((midiNote - roundedMidi) * 100);
+        let centsStr = (cents === 0) ? '' : (cents > 0 ? ` +${cents}c` : ` ${cents}c`);
+
+        return {
+            freq: freq,
+            label: `${noteName}${octave}${centsStr}`
+        };
+    }
+
+    function playTone(digit, stream) {
+        if (!audioContext) return;
+        if (stream.muted) return;
+
+        const inst = stream.instrument.value;
+        const pitchData = calculatePitch(digit, stream);
+        const attackTime = parseFloat(stream.attackTime.value);
+        const releaseTime = parseFloat(stream.releaseTime.value);
         const now = audioContext.currentTime;
 
         if (inst === 'drums') {
-            const drumNames = [
-                'Bass Drum (Kick)',
-                'Snare Drum',
-                'Closed Hi-Hat',
-                'Open Hi-Hat',
-                'Low Tom',
-                'Mid Tom',
-                'High Tom',
-                'Hand Clap',
-                '808 Cowbell',
-                'Crash Cymbal'
-            ];
             const drumIndex = parseInt(digit, 10) % 10;
-            noteInfo.innerHTML = `Digit: <span style="color:#00ff88">${digit}</span> | Drum: <span style="color:#00ff88">${drumNames[drumIndex]}</span> | Sound: <span style="color:#00ff88">Percussion</span>`;
             playDrums(drumIndex, now, releaseTime);
             return;
         }
 
-        const instLabels = {
-            piano: 'Piano',
-            violin: 'Violin',
-            guitar: 'Guitar',
-            flute: 'Flute',
-            marimba: 'Marimba',
-            synth: '8-Bit Synth'
-        };
-        const instName = instLabels[inst] || 'Piano';
-
-        noteInfo.innerHTML = `Digit: <span style="color:#00ff88">${digit}</span> | Note: <span style="color:#00ff88">${pitchData.label}</span> | Inst: <span style="color:#00ff88">${instName}</span> | Freq: <span style="color:#00ff88">${Math.round(pitchData.freq)}Hz</span>`;
-
         switch (inst) {
-            case 'violin':
-                playViolin(pitchData.freq, now, attackTime, releaseTime);
-                break;
-            case 'guitar':
-                playGuitar(pitchData.freq, now, attackTime, releaseTime);
-                break;
-            case 'flute':
-                playFlute(pitchData.freq, now, attackTime, releaseTime);
-                break;
-            case 'marimba':
-                playMarimba(pitchData.freq, now, attackTime, releaseTime);
-                break;
-            case 'synth':
-                playSynth(pitchData.freq, now, attackTime, releaseTime);
-                break;
+            case 'violin': playViolin(pitchData.freq, now, attackTime, releaseTime); break;
+            case 'guitar': playGuitar(pitchData.freq, now, attackTime, releaseTime); break;
+            case 'flute': playFlute(pitchData.freq, now, attackTime, releaseTime); break;
+            case 'marimba': playMarimba(pitchData.freq, now, attackTime, releaseTime); break;
+            case 'synth': playSynth(pitchData.freq, now, attackTime, releaseTime); break;
             case 'piano':
-            default:
-                playPiano(pitchData.freq, now, attackTime, releaseTime);
-                break;
+            default: playPiano(pitchData.freq, now, attackTime, releaseTime); break;
         }
     }
 
     function updateDisplay(index) {
         const contextSize = 3;
         let html = '';
-
         for (let i = index - contextSize; i <= index + contextSize; i++) {
-            if (i < 0 || i >= piSequence.length) {
-                html += '&nbsp;';
-            } else if (i === index) {
-                html += `<span class="highlight">${piSequence[i]}</span>`;
-            } else {
-                html += piSequence[i];
-            }
+            if (i < 0 || i >= piSequence.length) html += '&nbsp;';
+            else if (i === index) html += `<span class="highlight">${piSequence[i]}</span>`;
+            else html += piSequence[i];
         }
         displayEl.innerHTML = (index === 0 && piSequence[0] === '3') ? `3.${html.substring(1)}` : html;
+        if(noteInfo) {
+            noteInfo.innerHTML = `Playing Digit: <span style="color:#00ff88">${piSequence[index] || ''}</span> | Streams Active: <span style="color:#00ff88">${streams.length}</span>`;
+        }
     }
 
     function loop() {
@@ -576,7 +542,8 @@
             return;
         }
 
-        playTone(piSequence[currentIndex]);
+        const digit = piSequence[currentIndex];
+        streams.forEach(stream => playTone(digit, stream));
         updateDisplay(currentIndex);
 
         startIndexInput.value = currentIndex;
@@ -610,7 +577,6 @@
         startIndexInput.disabled = false;
     }
 
-    // Event Listeners for Playback
     playPauseBtn.addEventListener('click', togglePlayback);
 
     startIndexInput.addEventListener('change', (e) => {
@@ -622,14 +588,17 @@
         updateDisplay(currentIndex);
     });
 
+    // Slider logic
+    let holdTimeout, holdInterval;
+
     function updateSliderButtons(slider) {
         const min = slider.min !== '' ? parseFloat(slider.min) : -Infinity;
         const max = slider.max !== '' ? parseFloat(slider.max) : Infinity;
         const val = parseFloat(slider.value);
-
-        const prevBtn = document.querySelector(`.slider-btn[data-target="${slider.id}"][data-dir="-1"]`);
-        const nextBtn = document.querySelector(`.slider-btn[data-target="${slider.id}"][data-dir="1"]`);
-
+        const wrapper = slider.closest('.slider-wrapper');
+        if (!wrapper) return;
+        const prevBtn = wrapper.querySelector('.slider-btn[data-dir="-1"]');
+        const nextBtn = wrapper.querySelector('.slider-btn[data-dir="1"]');
         if (prevBtn) prevBtn.disabled = val <= min;
         if (nextBtn) nextBtn.disabled = val >= max;
     }
@@ -639,41 +608,25 @@
         const min = slider.min !== '' ? parseFloat(slider.min) : -Infinity;
         const max = slider.max !== '' ? parseFloat(slider.max) : Infinity;
         let val = parseFloat(slider.value) || 0;
-
         const stepStr = slider.step || '1';
         const decimalPlaces = stepStr.includes('.') ? stepStr.split('.')[1].length : 0;
 
         val += direction * step;
         val = Math.round(val * Math.pow(10, decimalPlaces)) / Math.pow(10, decimalPlaces);
-
         if (val < min) val = min;
         if (val > max) val = max;
-
-        if (val <= min || val >= max) {
-            stopAdjusting();
-        }
+        if (val <= min || val >= max) stopAdjusting();
 
         slider.value = val;
         slider.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
-    let holdTimeout;
-    let holdInterval;
-
-    function startAdjusting(sliderId, direction) {
-        const slider = document.getElementById(sliderId);
-        if (!slider) return;
-
+    function startAdjusting(slider, direction) {
         stepSlider(slider, direction);
-
         clearTimeout(holdTimeout);
         clearInterval(holdInterval);
-
         holdTimeout = setTimeout(() => {
-            holdInterval = setInterval(() => {
-                const s = document.getElementById(sliderId);
-                if (s) stepSlider(s, direction);
-            }, 80);
+            holdInterval = setInterval(() => stepSlider(slider, direction), 80);
         }, 350);
     }
 
@@ -682,71 +635,236 @@
         clearInterval(holdInterval);
     }
 
-    // Helper to wire up slider displays
-    function wireSlider(id, displayId, suffix = '') {
-        const slider = document.getElementById(id);
-        const display = document.getElementById(displayId);
-        slider.addEventListener('input', (e) => {
-            let val = parseFloat(e.target.value);
-            if (id === 'attackTime' || id === 'releaseTime') val = val.toFixed(2);
-            else if (id === 'spreadFactor') val = val.toFixed(1);
-            else if (val > 0 && id !== 'spreadFactor') val = '+' + val;
-
-            display.innerText = val + suffix;
-            updateSliderButtons(slider);
-        });
-        updateSliderButtons(slider);
-    }
-
-    wireSlider('attackTime', 'attackVal', 's');
-    wireSlider('releaseTime', 'releaseVal', 's');
-    wireSlider('octaveShift', 'octaveVal', '');
-    wireSlider('semitoneShift', 'semitoneVal', '');
-    wireSlider('spreadFactor', 'spreadVal', 'x');
-
-    // Wire up slider arrow stepper buttons
-    document.querySelectorAll('.slider-btn').forEach(btn => {
-        const targetId = btn.getAttribute('data-target');
-        const dir = parseInt(btn.getAttribute('data-dir'), 10);
-
-        btn.addEventListener('mousedown', (e) => {
-            if (e.button !== 0) return;
-            e.preventDefault();
-            startAdjusting(targetId, dir);
-        });
-
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            startAdjusting(targetId, dir);
-        }, { passive: false });
-
-        btn.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                const slider = document.getElementById(targetId);
-                if (slider) stepSlider(slider, dir);
-            }
-        });
-    });
-
     window.addEventListener('mouseup', stopAdjusting);
     window.addEventListener('mouseleave', stopAdjusting);
     window.addEventListener('touchend', stopAdjusting);
     window.addEventListener('touchcancel', stopAdjusting);
 
-    // Configuration defaults & persistence (localStorage)
-    const DEFAULTS = {
-        startIndex: 0,
-        tempo: 250,
+    // Number input stepper buttons (Play Index, Tempo)
+    function stepNumberInput(input, dir) {
+        const step = parseFloat(input.step) || 1;
+        const min  = input.min !== '' ? parseFloat(input.min)  : -Infinity;
+        const max  = input.max !== '' ? parseFloat(input.max)  :  Infinity;
+        let val = parseFloat(input.value) || 0;
+        val += dir * step;
+        if (val < min) val = min;
+        if (val > max) val = max;
+        input.value = val;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    document.querySelectorAll('.number-btn').forEach(btn => {
+        const dir = parseInt(btn.getAttribute('data-dir'), 10);
+        const input = document.getElementById(btn.getAttribute('data-target'));
+        btn.addEventListener('mousedown', (e) => {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            stepNumberInput(input, dir);
+            clearTimeout(holdTimeout);
+            clearInterval(holdInterval);
+            holdTimeout = setTimeout(() => {
+                holdInterval = setInterval(() => stepNumberInput(input, dir), 80);
+            }, 350);
+        });
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            stepNumberInput(input, dir);
+            clearTimeout(holdTimeout);
+            clearInterval(holdInterval);
+            holdTimeout = setTimeout(() => {
+                holdInterval = setInterval(() => stepNumberInput(input, dir), 80);
+            }, 350);
+        }, { passive: false });
+    });
+
+    const STREAM_DEFAULTS = {
+        instrument: 'piano',
         attackTime: 0.06,
         releaseTime: 0.60,
         octaveShift: 0,
         semitoneShift: 0,
-        spreadFactor: 1.0,
-        instrument: 'piano'
+        spreadFactor: 1.0
     };
 
-    const STORAGE_KEY = 'sing_pi_config';
+    const DEFAULTS = {
+        startIndex: 0,
+        tempo: 250,
+        streams: [STREAM_DEFAULTS]
+    };
+
+    let streams = [];
+    const streamsContainer = document.getElementById('streamsContainer');
+    const streamTemplate = document.getElementById('streamTemplate');
+    const addStreamBtn = document.getElementById('addStreamBtn');
+
+    function createStream(config = STREAM_DEFAULTS) {
+        const clone = streamTemplate.content.cloneNode(true);
+        const panel = clone.querySelector('.stream-panel');
+        
+        const stream = {
+            panel: panel,
+            instrument: panel.querySelector('.select-instrument'),
+            attackTime: panel.querySelector('.attackTime'),
+            releaseTime: panel.querySelector('.releaseTime'),
+            octaveShift: panel.querySelector('.octaveShift'),
+            semitoneShift: panel.querySelector('.semitoneShift'),
+            spreadFactor: panel.querySelector('.spreadFactor'),
+            muted: config.muted || false
+        };
+
+        // Initialize values
+        stream.instrument.value = config.instrument !== undefined ? config.instrument : 'piano';
+        stream.attackTime.value = config.attackTime !== undefined ? config.attackTime : 0.06;
+        stream.releaseTime.value = config.releaseTime !== undefined ? config.releaseTime : 0.60;
+        stream.octaveShift.value = config.octaveShift !== undefined ? config.octaveShift : 0;
+        stream.semitoneShift.value = config.semitoneShift !== undefined ? config.semitoneShift : 0;
+        stream.spreadFactor.value = config.spreadFactor !== undefined ? config.spreadFactor : 1.0;
+
+        // Wire inputs
+        ['attackTime', 'releaseTime', 'octaveShift', 'semitoneShift', 'spreadFactor'].forEach(key => {
+            const input = stream[key];
+            const d = panel.querySelector(`.${key.replace('Time', 'Val').replace('Shift', 'Val').replace('Factor', 'Val')}`);
+            
+            input.addEventListener('input', (e) => {
+                let val = parseFloat(e.target.value);
+                let suffix = '';
+                if (key === 'attackTime' || key === 'releaseTime') { val = val.toFixed(2); suffix = 's'; }
+                else if (key === 'spreadFactor') { val = val.toFixed(1); suffix = 'x'; }
+                else if (val > 0) val = '+' + val;
+                if (d) d.innerText = val + suffix;
+                updateSliderButtons(input);
+            });
+            
+            // Trigger initial input event
+            input.dispatchEvent(new Event('input'));
+        });
+
+        // Wire buttons
+        panel.querySelectorAll('.slider-btn').forEach(btn => {
+            const dir = parseInt(btn.getAttribute('data-dir'), 10);
+            const slider = btn.parentElement.querySelector('input[type="range"]');
+            btn.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                e.preventDefault();
+                startAdjusting(slider, dir);
+            });
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startAdjusting(slider, dir);
+            }, { passive: false });
+        });
+
+        // Mute button
+        const muteBtn = panel.querySelector('.mute-stream-btn');
+        const iconUnmuted = muteBtn.querySelector('.icon-unmuted');
+        const iconMuted = muteBtn.querySelector('.icon-muted');
+
+        function applyMuteState() {
+            if (stream.muted) {
+                iconUnmuted.style.display = 'none';
+                iconMuted.style.display = '';
+                muteBtn.title = 'Unmute Stream';
+                panel.classList.add('stream-muted');
+            } else {
+                iconUnmuted.style.display = '';
+                iconMuted.style.display = 'none';
+                muteBtn.title = 'Mute Stream';
+                panel.classList.remove('stream-muted');
+            }
+        }
+        applyMuteState();
+
+        muteBtn.addEventListener('click', () => {
+            stream.muted = !stream.muted;
+            applyMuteState();
+        });
+
+        panel.querySelector('.remove-stream-btn').addEventListener('click', () => {
+            if (streams.length > 1) {
+                panel.remove();
+                streams = streams.filter(s => s !== stream);
+            } else {
+                showStatus('Cannot remove the last stream');
+            }
+        });
+
+        streamsContainer.appendChild(panel);
+        streams.push(stream);
+    }
+
+    addStreamBtn.addEventListener('click', () => createStream());
+
+    function saveConfig() {
+        const config = {
+            startIndex: parseInt(startIndexInput.value, 10) || 0,
+            tempo: parseInt(tempoInput.value, 10) || 250,
+            streams: streams.map(s => ({
+                instrument: s.instrument.value,
+                attackTime: parseFloat(s.attackTime.value),
+                releaseTime: parseFloat(s.releaseTime.value),
+                octaveShift: parseInt(s.octaveShift.value, 10),
+                semitoneShift: parseInt(s.semitoneShift.value, 10),
+                spreadFactor: parseFloat(s.spreadFactor.value),
+                muted: s.muted
+            }))
+        };
+        try {
+            localStorage.setItem('sing_pi_config', JSON.stringify(config));
+            showStatus('✓ Configuration saved to LocalStorage');
+        } catch (e) {
+            showStatus('Failed to save configuration');
+        }
+    }
+
+    function loadConfig() {
+        try {
+            const saved = localStorage.getItem('sing_pi_config');
+            if (!saved) {
+                createStream();
+                return;
+            }
+            const config = JSON.parse(saved);
+            applyConfig(config);
+        } catch (e) {
+            createStream();
+        }
+    }
+
+    function applyConfig(config) {
+        if (config.startIndex !== undefined) {
+            startIndexInput.value = config.startIndex;
+            currentIndex = parseInt(config.startIndex, 10) || 0;
+        }
+        if (config.tempo !== undefined) {
+            tempoInput.value = config.tempo;
+        }
+        
+        streamsContainer.innerHTML = '';
+        streams = [];
+        
+        if (config.streams && config.streams.length > 0) {
+            config.streams.forEach(c => createStream(c));
+        } else {
+            // fallback for old config format
+            createStream({
+                instrument: config.instrument,
+                attackTime: config.attackTime,
+                releaseTime: config.releaseTime,
+                octaveShift: config.octaveShift,
+                semitoneShift: config.semitoneShift,
+                spreadFactor: config.spreadFactor
+            });
+        }
+        updateDisplay(currentIndex);
+    }
+
+    function resetConfig() {
+        applyConfig(DEFAULTS);
+        try {
+            localStorage.removeItem('sing_pi_config');
+            showStatus('Restored default settings');
+        } catch (e) {}
+    }
 
     let statusTimeout;
     function showStatus(msg) {
@@ -760,106 +878,8 @@
         }, 2500);
     }
 
-    function applyConfig(config) {
-        if (config.instrument !== undefined && instrumentSelect) {
-            instrumentSelect.value = config.instrument;
-        }
-        if (config.startIndex !== undefined) {
-            startIndexInput.value = config.startIndex;
-            currentIndex = parseInt(config.startIndex, 10) || 0;
-        }
-        if (config.tempo !== undefined) {
-            tempoInput.value = config.tempo;
-        }
-        if (config.attackTime !== undefined) {
-            attackInput.value = config.attackTime;
-        }
-        if (config.releaseTime !== undefined) {
-            releaseInput.value = config.releaseTime;
-        }
-        if (config.octaveShift !== undefined) {
-            octaveInput.value = config.octaveShift;
-        }
-        if (config.semitoneShift !== undefined) {
-            semitoneInput.value = config.semitoneShift;
-        }
-        if (config.spreadFactor !== undefined) {
-            spreadInput.value = config.spreadFactor;
-        }
-
-        // Trigger input event on all sliders to refresh visual labels
-        [attackInput, releaseInput, octaveInput, semitoneInput, spreadInput].forEach(slider => {
-            slider.dispatchEvent(new Event('input'));
-        });
-
-        updateDisplay(currentIndex);
-    }
-
-    function saveConfig() {
-        const config = {
-            startIndex: parseInt(startIndexInput.value, 10) || 0,
-            tempo: parseInt(tempoInput.value, 10) || 250,
-            attackTime: parseFloat(attackInput.value),
-            releaseTime: parseFloat(releaseInput.value),
-            octaveShift: parseInt(octaveInput.value, 10),
-            semitoneShift: parseInt(semitoneInput.value, 10),
-            spreadFactor: parseFloat(spreadInput.value),
-            instrument: instrumentSelect ? instrumentSelect.value : 'piano'
-        };
-
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-            showStatus('✓ Configuration saved to LocalStorage');
-        } catch (e) {
-            console.error('Failed to save configuration:', e);
-            showStatus('Failed to save configuration');
-        }
-    }
-
-    function loadConfig() {
-        try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (!saved) return;
-            const config = JSON.parse(saved);
-            applyConfig(config);
-        } catch (e) {
-            console.error('Failed to load configuration:', e);
-        }
-    }
-
-    function resetConfig() {
-        applyConfig(DEFAULTS);
-        try {
-            localStorage.removeItem(STORAGE_KEY);
-            showStatus('Restored default settings');
-        } catch (e) {
-            console.error('Failed to reset configuration:', e);
-        }
-    }
-
-    if (instrumentSelect) {
-        instrumentSelect.addEventListener('change', () => {
-            const inst = instrumentSelect.value;
-            if (inst === 'drums') {
-                noteInfo.innerHTML = `Instrument: <span style="color:#00ff88">Drums</span> (Percussion mapped to digits 0–9)`;
-            } else {
-                const instLabels = {
-                    piano: 'Piano',
-                    violin: 'Violin',
-                    guitar: 'Guitar',
-                    flute: 'Flute',
-                    marimba: 'Marimba',
-                    synth: '8-Bit Synth'
-                };
-                noteInfo.innerHTML = `Instrument: <span style="color:#00ff88">${instLabels[inst] || inst}</span>`;
-            }
-        });
-    }
-
     document.getElementById('saveConfigBtn').addEventListener('click', saveConfig);
     document.getElementById('resetConfigBtn').addEventListener('click', resetConfig);
 
-    // Initialize display and load saved config if present
     loadConfig();
     updateDisplay(currentIndex);
-

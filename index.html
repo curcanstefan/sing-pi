@@ -23,102 +23,111 @@
         </button>
     </div>
 
-    <div class="settings-grid">
-        <!-- Instrument & Timing -->
-        <div class="settings-panel">
-            <h3>Instrument & Timing</h3>
-            <div class="input-group">
-                <label for="instrument">Instrument:</label>
-                <select id="instrument" class="select-instrument">
-                    <option value="piano">🎹 Piano</option>
-                    <option value="violin">🎻 Violin</option>
-                    <option value="guitar">🎸 Guitar</option>
-                    <option value="flute">🪈 Flute</option>
-                    <option value="marimba">🪵 Marimba</option>
-                    <option value="synth">👾 8-Bit Synth</option>
-                    <option value="drums">🥁 Drums</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label for="startIndex">Start Index:</label>
+    
+    <div class="global-settings">
+        <div class="input-group">
+            <label for="startIndex">Play Index:</label>
+            <div class="number-stepper">
+                <button type="button" class="slider-btn number-btn" data-target="startIndex" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
                 <input type="number" id="startIndex" value="0" min="0" max="99">
-            </div>
-            <div class="input-group">
-                <label for="tempo">Tempo (ms):</label>
-                <input type="number" id="tempo" value="250" min="50" max="1000" step="10">
-            </div>
-            <div class="input-group">
-                <label for="attackTime">Note Start (Attack):</label>
-                <div class="slider-wrapper">
-                    <button type="button" class="slider-btn" data-target="attackTime" data-dir="-1" title="Decrease Note Start" aria-label="Decrease Note Start">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                    </button>
-                    <input type="range" id="attackTime" min="0.01" max="0.3" step="0.01" value="0.06">
-                    <button type="button" class="slider-btn" data-target="attackTime" data-dir="1" title="Increase Note Start" aria-label="Increase Note Start">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                    </button>
-                </div>
-                <span class="value-display" id="attackVal">0.06s</span>
-            </div>
-            <div class="input-group">
-                <label for="releaseTime">Note End (Release):</label>
-                <div class="slider-wrapper">
-                    <button type="button" class="slider-btn" data-target="releaseTime" data-dir="-1" title="Decrease Note End" aria-label="Decrease Note End">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                    </button>
-                    <input type="range" id="releaseTime" min="0.05" max="3.0" step="0.05" value="0.60">
-                    <button type="button" class="slider-btn" data-target="releaseTime" data-dir="1" title="Increase Note End" aria-label="Increase Note End">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                    </button>
-                </div>
-                <span class="value-display" id="releaseVal">0.60s</span>
+                <button type="button" class="slider-btn number-btn" data-target="startIndex" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
             </div>
         </div>
-
-        <!-- Pitch & Tuning -->
-        <div class="settings-panel">
-            <h3>Pitch & Tuning</h3>
-            <div class="input-group" title="Shift the overall pitch up or down by full octaves">
-                <label for="octaveShift">Octave Shift:</label>
-                <div class="slider-wrapper">
-                    <button type="button" class="slider-btn" data-target="octaveShift" data-dir="-1" title="Decrease Octave Shift" aria-label="Decrease Octave Shift">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                    </button>
-                    <input type="range" id="octaveShift" min="-3" max="3" step="1" value="0">
-                    <button type="button" class="slider-btn" data-target="octaveShift" data-dir="1" title="Increase Octave Shift" aria-label="Increase Octave Shift">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                    </button>
-                </div>
-                <span class="value-display" id="octaveVal">0</span>
-            </div>
-            <div class="input-group" title="Shift pitch by half-steps (semitones)">
-                <label for="semitoneShift">Transpose (Semitones):</label>
-                <div class="slider-wrapper">
-                    <button type="button" class="slider-btn" data-target="semitoneShift" data-dir="-1" title="Decrease Transpose" aria-label="Decrease Transpose">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                    </button>
-                    <input type="range" id="semitoneShift" min="-11" max="11" step="1" value="0">
-                    <button type="button" class="slider-btn" data-target="semitoneShift" data-dir="1" title="Increase Transpose" aria-label="Increase Transpose">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                    </button>
-                </div>
-                <span class="value-display" id="semitoneVal">0</span>
-            </div>
-            <div class="input-group" title="Stretch or compress the musical distance between digits">
-                <label for="spreadFactor">Interval Spread:</label>
-                <div class="slider-wrapper">
-                    <button type="button" class="slider-btn" data-target="spreadFactor" data-dir="-1" title="Decrease Interval Spread" aria-label="Decrease Interval Spread">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                    </button>
-                    <input type="range" id="spreadFactor" min="0.1" max="3.0" step="0.1" value="1.0">
-                    <button type="button" class="slider-btn" data-target="spreadFactor" data-dir="1" title="Increase Interval Spread" aria-label="Increase Interval Spread">
-                        <svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                    </button>
-                </div>
-                <span class="value-display" id="spreadVal">1.0x</span>
+        <div class="global-settings-separator"></div>
+        <div class="input-group">
+            <label for="tempo">Tempo (ms):</label>
+            <div class="number-stepper">
+                <button type="button" class="slider-btn number-btn" data-target="tempo" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                <input type="number" id="tempo" value="250" min="50" max="1000" step="10">
+                <button type="button" class="slider-btn number-btn" data-target="tempo" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
             </div>
         </div>
     </div>
+    
+    <div id="streamsContainer"></div>
+    <div style="text-align: center; margin-top: 15px;">
+        <button id="addStreamBtn" class="btn-action">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            Add Audio Stream
+        </button>
+    </div>
+
+    <template id="streamTemplate">
+        <div class="settings-panel stream-panel">
+            <div class="stream-header">
+                <h3>Audio Stream</h3>
+                <div class="stream-header-btns">
+                    <button type="button" class="btn-action btn-secondary mute-stream-btn" title="Mute Stream">
+                        <svg class="icon-unmuted" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                        <svg class="icon-muted" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                    </button>
+                    <button type="button" class="btn-action btn-secondary remove-stream-btn" title="Remove Stream">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="stream-settings-grid">
+                <div class="input-group">
+                    <label>Instrument:</label>
+                    <select class="select-instrument">
+                        <option value="piano">🎹 Piano</option>
+                        <option value="violin">🎻 Violin</option>
+                        <option value="guitar">🎸 Guitar</option>
+                        <option value="flute">🪈 Flute</option>
+                        <option value="marimba">🪵 Marimba</option>
+                        <option value="synth">👾 8-Bit Synth</option>
+                        <option value="drums">🥁 Drums</option>
+                    </select>
+                    <span class="value-display">&nbsp</span>
+                </div>
+                <div class="input-group">
+                    <label>Transpose: <span class="help-icon">?<span class="help-tooltip">Shifts all notes up or down by a fixed number of semitones — like changing key. Moves the whole scale together.</span></span></label>
+                    <div class="slider-wrapper">
+                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                        <input type="range" class="semitoneShift" min="-11" max="11" step="1" value="0">
+                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                    </div>
+                    <span class="value-display semitoneVal">0</span>
+                </div>
+                <div class="input-group">
+                    <label>Note Start:</label>
+                    <div class="slider-wrapper">
+                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                        <input type="range" class="attackTime" min="0.01" max="0.3" step="0.01" value="0.06">
+                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                    </div>
+                    <span class="value-display attackVal">0.06s</span>
+                </div>
+                <div class="input-group">
+                    <label>Octave Shift: <span class="help-icon">?<span class="help-tooltip">Shifts all notes up or down by whole octaves (12 semitones each). Use to place this stream in a higher or lower register than others.</span></span></label>
+                    <div class="slider-wrapper">
+                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                        <input type="range" class="octaveShift" min="-3" max="3" step="1" value="0">
+                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                    </div>
+                    <span class="value-display octaveVal">0</span>
+                </div>
+                <div class="input-group">
+                    <label>Note End:</label>
+                    <div class="slider-wrapper">
+                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                        <input type="range" class="releaseTime" min="0.05" max="3.0" step="0.05" value="0.60">
+                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                    </div>
+                    <span class="value-display releaseVal">0.60s</span>
+                </div>
+                <div class="input-group">
+                    <label>Spread: <span class="help-icon">?<span class="help-tooltip">Stretches or compresses the interval between notes. 1.0 = normal diatonic scale (~2 octave range). Higher = wider jumps between digits; lower = notes cluster closer together.</span></span></label>
+                    <div class="slider-wrapper">
+                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                        <input type="range" class="spreadFactor" min="0.1" max="3.0" step="0.1" value="1.0">
+                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                    </div>
+                    <span class="value-display spreadVal">1.0x</span>
+                </div>
+            </div>
+        </div>
+    </template>
 
     <div class="config-controls">
         <button id="saveConfigBtn" class="btn-action" title="Save current settings to localStorage">
