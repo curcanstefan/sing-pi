@@ -58,7 +58,7 @@
     }
 
 
-    function playPiano(freq, now, attackTime, releaseTime) {
+    function playPiano(freq, now, attackTime, releaseTime, dest = audioContext.destination) {
         const totalDuration = attackTime + releaseTime;
 
         const osc1 = audioContext.createOscillator();
@@ -89,7 +89,7 @@
         osc2.connect(gain2);
         gain1.connect(filter);
         gain2.connect(filter);
-        filter.connect(audioContext.destination);
+        filter.connect(dest);
 
         osc1.start(now);
         osc2.start(now);
@@ -97,7 +97,7 @@
         osc2.stop(now + totalDuration);
     }
 
-    function playViolin(freq, now, attackTime, releaseTime) {
+    function playViolin(freq, now, attackTime, releaseTime, dest = audioContext.destination) {
         const totalDuration = attackTime + releaseTime;
 
         const osc = audioContext.createOscillator();
@@ -132,7 +132,7 @@
         osc.connect(lowpass);
         filter.connect(gainNode);
         lowpass.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+        gainNode.connect(dest);
 
         lfo.start(now);
         osc.start(now);
@@ -140,7 +140,7 @@
         osc.stop(now + totalDuration);
     }
 
-    function playGuitar(freq, now, attackTime, releaseTime) {
+    function playGuitar(freq, now, attackTime, releaseTime, dest = audioContext.destination) {
         const totalDuration = attackTime + releaseTime;
 
         const osc1 = audioContext.createOscillator();
@@ -173,7 +173,7 @@
         gain1.connect(filter);
         gain2.connect(filter);
         filter.connect(masterGain);
-        masterGain.connect(audioContext.destination);
+        masterGain.connect(dest);
 
         osc1.start(now);
         osc2.start(now);
@@ -181,7 +181,7 @@
         osc2.stop(now + totalDuration);
     }
 
-    function playFlute(freq, now, attackTime, releaseTime) {
+    function playFlute(freq, now, attackTime, releaseTime, dest = audioContext.destination) {
         const totalDuration = attackTime + releaseTime;
 
         const osc1 = audioContext.createOscillator();
@@ -216,7 +216,7 @@
         osc2.connect(gain2);
         gain1.connect(masterGain);
         gain2.connect(masterGain);
-        masterGain.connect(audioContext.destination);
+        masterGain.connect(dest);
 
         lfo.start(now);
         osc1.start(now);
@@ -226,7 +226,7 @@
         osc2.stop(now + totalDuration);
     }
 
-    function playMarimba(freq, now, attackTime, releaseTime) {
+    function playMarimba(freq, now, attackTime, releaseTime, dest = audioContext.destination) {
         const totalDuration = attackTime + releaseTime;
 
         const osc1 = audioContext.createOscillator();
@@ -253,7 +253,7 @@
         osc2.connect(gain2);
         gain1.connect(masterGain);
         gain2.connect(masterGain);
-        masterGain.connect(audioContext.destination);
+        masterGain.connect(dest);
 
         osc1.start(now);
         osc2.start(now);
@@ -261,7 +261,7 @@
         osc2.stop(now + totalDuration);
     }
 
-    function playSynth(freq, now, attackTime, releaseTime) {
+    function playSynth(freq, now, attackTime, releaseTime, dest = audioContext.destination) {
         const totalDuration = attackTime + releaseTime;
 
         const osc = audioContext.createOscillator();
@@ -280,13 +280,13 @@
 
         osc.connect(filter);
         filter.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+        gainNode.connect(dest);
 
         osc.start(now);
         osc.stop(now + totalDuration);
     }
 
-    function playDrums(digit, now, releaseTime) {
+    function playDrums(digit, now, releaseTime, dest = audioContext.destination) {
         const n = digit % 10;
         const durScale = Math.max(0.4, Math.min(releaseTime / 0.6, 2.5));
 
@@ -299,7 +299,7 @@
                 gain.gain.setValueAtTime(0.8, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3 * durScale);
                 osc.connect(gain);
-                gain.connect(audioContext.destination);
+                gain.connect(dest);
                 osc.start(now);
                 osc.stop(now + 0.3 * durScale);
                 break;
@@ -313,7 +313,7 @@
                 oscGain.gain.setValueAtTime(0.5, now);
                 oscGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
                 osc.connect(oscGain);
-                oscGain.connect(audioContext.destination);
+                oscGain.connect(dest);
                 osc.start(now);
                 osc.stop(now + 0.12);
 
@@ -328,7 +328,7 @@
                 noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.22 * durScale);
                 noise.connect(noiseFilter);
                 noiseFilter.connect(noiseGain);
-                noiseGain.connect(audioContext.destination);
+                noiseGain.connect(dest);
                 noise.start(now);
                 noise.stop(now + 0.22 * durScale);
                 break;
@@ -344,7 +344,7 @@
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05 * durScale);
                 noise.connect(filter);
                 filter.connect(gain);
-                gain.connect(audioContext.destination);
+                gain.connect(dest);
                 noise.start(now);
                 noise.stop(now + 0.05 * durScale);
                 break;
@@ -360,7 +360,7 @@
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35 * durScale);
                 noise.connect(filter);
                 filter.connect(gain);
-                gain.connect(audioContext.destination);
+                gain.connect(dest);
                 noise.start(now);
                 noise.stop(now + 0.35 * durScale);
                 break;
@@ -373,7 +373,7 @@
                 gain.gain.setValueAtTime(0.6, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3 * durScale);
                 osc.connect(gain);
-                gain.connect(audioContext.destination);
+                gain.connect(dest);
                 osc.start(now);
                 osc.stop(now + 0.3 * durScale);
                 break;
@@ -386,7 +386,7 @@
                 gain.gain.setValueAtTime(0.6, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28 * durScale);
                 osc.connect(gain);
-                gain.connect(audioContext.destination);
+                gain.connect(dest);
                 osc.start(now);
                 osc.stop(now + 0.28 * durScale);
                 break;
@@ -399,7 +399,7 @@
                 gain.gain.setValueAtTime(0.6, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25 * durScale);
                 osc.connect(gain);
-                gain.connect(audioContext.destination);
+                gain.connect(dest);
                 osc.start(now);
                 osc.stop(now + 0.25 * durScale);
                 break;
@@ -421,7 +421,7 @@
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25 * durScale);
                 noise.connect(filter);
                 filter.connect(gain);
-                gain.connect(audioContext.destination);
+                gain.connect(dest);
                 noise.start(now);
                 noise.stop(now + 0.25 * durScale);
                 break;
@@ -443,7 +443,7 @@
                 osc1.connect(filter);
                 osc2.connect(filter);
                 filter.connect(gain);
-                gain.connect(audioContext.destination);
+                gain.connect(dest);
                 osc1.start(now);
                 osc2.start(now);
                 osc1.stop(now + 0.22 * durScale);
@@ -461,7 +461,7 @@
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7 * durScale);
                 noise.connect(filter);
                 filter.connect(gain);
-                gain.connect(audioContext.destination);
+                gain.connect(dest);
                 noise.start(now);
                 noise.stop(now + 0.7 * durScale);
                 break;
@@ -495,6 +495,16 @@
         };
     }
 
+    function getStreamGainNode(stream) {
+        if (!stream.gainNode && audioContext) {
+            stream.gainNode = audioContext.createGain();
+            const vol = stream.muted ? 0 : (stream.volume ? parseFloat(stream.volume.value) : 1.0);
+            stream.gainNode.gain.setValueAtTime(vol, audioContext.currentTime);
+            stream.gainNode.connect(audioContext.destination);
+        }
+        return stream.gainNode;
+    }
+
     function playTone(digit, stream) {
         if (!audioContext) return;
         if (stream.muted) return;
@@ -504,21 +514,22 @@
         const attackTime = parseFloat(stream.attackTime.value);
         const releaseTime = parseFloat(stream.releaseTime.value);
         const now = audioContext.currentTime;
+        const dest = getStreamGainNode(stream) || audioContext.destination;
 
         if (inst === 'drums') {
             const drumIndex = parseInt(digit, 10) % 10;
-            playDrums(drumIndex, now, releaseTime);
+            playDrums(drumIndex, now, releaseTime, dest);
             return;
         }
 
         switch (inst) {
-            case 'violin': playViolin(pitchData.freq, now, attackTime, releaseTime); break;
-            case 'guitar': playGuitar(pitchData.freq, now, attackTime, releaseTime); break;
-            case 'flute': playFlute(pitchData.freq, now, attackTime, releaseTime); break;
-            case 'marimba': playMarimba(pitchData.freq, now, attackTime, releaseTime); break;
-            case 'synth': playSynth(pitchData.freq, now, attackTime, releaseTime); break;
+            case 'violin': playViolin(pitchData.freq, now, attackTime, releaseTime, dest); break;
+            case 'guitar': playGuitar(pitchData.freq, now, attackTime, releaseTime, dest); break;
+            case 'flute': playFlute(pitchData.freq, now, attackTime, releaseTime, dest); break;
+            case 'marimba': playMarimba(pitchData.freq, now, attackTime, releaseTime, dest); break;
+            case 'synth': playSynth(pitchData.freq, now, attackTime, releaseTime, dest); break;
             case 'piano':
-            default: playPiano(pitchData.freq, now, attackTime, releaseTime); break;
+            default: playPiano(pitchData.freq, now, attackTime, releaseTime, dest); break;
         }
     }
 
@@ -683,7 +694,8 @@
         releaseTime: 0.60,
         octaveShift: 0,
         semitoneShift: 0,
-        spreadFactor: 1.0
+        spreadFactor: 1.0,
+        volume: 1.0
     };
 
     const DEFAULTS = {
@@ -709,7 +721,10 @@
             octaveShift: panel.querySelector('.octaveShift'),
             semitoneShift: panel.querySelector('.semitoneShift'),
             spreadFactor: panel.querySelector('.spreadFactor'),
-            muted: config.muted || false
+            volume: panel.querySelector('.stream-volume-slider'),
+            volumeDisplay: panel.querySelector('.stream-volume-display'),
+            muted: config.muted || false,
+            gainNode: null
         };
 
         // Initialize values
@@ -719,6 +734,13 @@
         stream.octaveShift.value = config.octaveShift !== undefined ? config.octaveShift : 0;
         stream.semitoneShift.value = config.semitoneShift !== undefined ? config.semitoneShift : 0;
         stream.spreadFactor.value = config.spreadFactor !== undefined ? config.spreadFactor : 1.0;
+        const initialVol = config.volume !== undefined ? parseFloat(config.volume) : 1.0;
+        if (stream.volume) {
+            stream.volume.value = initialVol;
+        }
+        if (stream.volumeDisplay) {
+            stream.volumeDisplay.innerText = Math.round(initialVol * 100) + '%';
+        }
 
         // Wire inputs
         ['attackTime', 'releaseTime', 'octaveShift', 'semitoneShift', 'spreadFactor'].forEach(key => {
@@ -754,6 +776,28 @@
             }, { passive: false });
         });
 
+        // Volume slider
+        if (stream.volume) {
+            stream.volume.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                if (stream.volumeDisplay) {
+                    stream.volumeDisplay.innerText = Math.round(val * 100) + '%';
+                }
+                if (stream.gainNode && audioContext) {
+                    if (!stream.muted) {
+                        stream.gainNode.gain.setValueAtTime(val, audioContext.currentTime);
+                    }
+                }
+                if (val === 0 && !stream.muted) {
+                    stream.muted = true;
+                    applyMuteState();
+                } else if (val > 0 && stream.muted) {
+                    stream.muted = false;
+                    applyMuteState();
+                }
+            });
+        }
+
         // Mute button
         const muteBtn = panel.querySelector('.mute-stream-btn');
         const iconUnmuted = muteBtn.querySelector('.icon-unmuted');
@@ -765,22 +809,37 @@
                 iconMuted.style.display = '';
                 muteBtn.title = 'Unmute Stream';
                 panel.classList.add('stream-muted');
+                if (stream.gainNode && audioContext) {
+                    stream.gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                }
             } else {
                 iconUnmuted.style.display = '';
                 iconMuted.style.display = 'none';
                 muteBtn.title = 'Mute Stream';
                 panel.classList.remove('stream-muted');
+                if (stream.gainNode && audioContext) {
+                    stream.gainNode.gain.setValueAtTime(parseFloat(stream.volume.value), audioContext.currentTime);
+                }
             }
         }
         applyMuteState();
 
         muteBtn.addEventListener('click', () => {
             stream.muted = !stream.muted;
+            if (!stream.muted && stream.volume && parseFloat(stream.volume.value) === 0) {
+                stream.volume.value = 0.5;
+                if (stream.volumeDisplay) {
+                    stream.volumeDisplay.innerText = '50%';
+                }
+            }
             applyMuteState();
         });
 
         panel.querySelector('.remove-stream-btn').addEventListener('click', () => {
             if (streams.length > 1) {
+                if (stream.gainNode) {
+                    stream.gainNode.disconnect();
+                }
                 panel.remove();
                 streams = streams.filter(s => s !== stream);
             } else {
@@ -805,6 +864,7 @@
                 octaveShift: parseInt(s.octaveShift.value, 10),
                 semitoneShift: parseInt(s.semitoneShift.value, 10),
                 spreadFactor: parseFloat(s.spreadFactor.value),
+                volume: s.volume ? parseFloat(s.volume.value) : 1.0,
                 muted: s.muted
             }))
         };
