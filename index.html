@@ -97,63 +97,67 @@
                 </div>
             </div>
             <div class="stream-settings-grid">
-                <div class="input-group">
-                    <label>Instrument:</label>
-                    <select class="select-instrument">
-                        <option value="piano">🎹 Piano</option>
-                        <option value="violin">🎻 Violin</option>
-                        <option value="guitar">🎸 Guitar</option>
-                        <option value="flute">🪈 Flute</option>
-                        <option value="marimba">🪵 Marimba</option>
-                        <option value="synth">👾 8-Bit Synth</option>
-                        <option value="drums">🥁 Drums</option>
-                    </select>
-                    <span class="value-display">&nbsp</span>
-                </div>
-                <div class="input-group">
-                    <label>Transpose: <span class="help-icon">?<span class="help-tooltip">Shifts all notes up or down by a fixed number of semitones — like changing key. Moves the whole scale together.</span></span></label>
-                    <div class="slider-wrapper">
-                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-                        <input type="range" class="semitoneShift" min="-11" max="11" step="1" value="0">
-                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                <div class="stream-settings-col">
+                    <div class="input-group">
+                        <label>Instrument:</label>
+                        <select class="select-instrument">
+                            <option value="piano">🎹 Piano</option>
+                            <option value="violin">🎻 Violin</option>
+                            <option value="guitar">🎸 Guitar</option>
+                            <option value="flute">🪈 Flute</option>
+                            <option value="marimba">🪵 Marimba</option>
+                            <option value="synth">👾 8-Bit Synth</option>
+                            <option value="drums">🥁 Drums</option>
+                        </select>
+                        <span class="value-display">&nbsp;</span>
                     </div>
-                    <span class="value-display semitoneVal">0</span>
-                </div>
-                <div class="input-group">
-                    <label>Note Start:</label>
-                    <div class="slider-wrapper">
-                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-                        <input type="range" class="attackTime" min="0.01" max="0.3" step="0.01" value="0.06">
-                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                    <div class="input-group">
+                        <label>Note Start:</label>
+                        <div class="slider-wrapper">
+                            <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                            <input type="range" class="attackTime" min="0.01" max="0.3" step="0.01" value="0.06">
+                            <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                        </div>
+                        <span class="value-display attackVal">0.06s</span>
                     </div>
-                    <span class="value-display attackVal">0.06s</span>
-                </div>
-                <div class="input-group">
-                    <label>Octave Shift: <span class="help-icon">?<span class="help-tooltip">Shifts all notes up or down by whole octaves (12 semitones each). Use to place this stream in a higher or lower register than others.</span></span></label>
-                    <div class="slider-wrapper">
-                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-                        <input type="range" class="octaveShift" min="-3" max="3" step="1" value="0">
-                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                    <div class="input-group">
+                        <label>Note End:</label>
+                        <div class="slider-wrapper">
+                            <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                            <input type="range" class="releaseTime" min="0.05" max="3.0" step="0.05" value="0.60">
+                            <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                        </div>
+                        <span class="value-display releaseVal">0.60s</span>
                     </div>
-                    <span class="value-display octaveVal">0</span>
                 </div>
-                <div class="input-group">
-                    <label>Note End:</label>
-                    <div class="slider-wrapper">
-                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-                        <input type="range" class="releaseTime" min="0.05" max="3.0" step="0.05" value="0.60">
-                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                <div class="stream-settings-col">
+                    <div class="input-group">
+                        <label>Transpose: <span class="help-icon">?<span class="help-tooltip">Shifts all notes up or down by a fixed number of semitones — like changing key. Moves the whole scale together.</span></span></label>
+                        <div class="slider-wrapper">
+                            <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                            <input type="range" class="semitoneShift" min="-11" max="11" step="1" value="0">
+                            <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                        </div>
+                        <span class="value-display semitoneVal">0</span>
                     </div>
-                    <span class="value-display releaseVal">0.60s</span>
-                </div>
-                <div class="input-group">
-                    <label>Spread: <span class="help-icon">?<span class="help-tooltip">Stretches or compresses the interval between notes. 1.0 = normal diatonic scale (~2 octave range). Higher = wider jumps between digits; lower = notes cluster closer together.</span></span></label>
-                    <div class="slider-wrapper">
-                        <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
-                        <input type="range" class="spreadFactor" min="0.1" max="3.0" step="0.1" value="1.0">
-                        <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                    <div class="input-group">
+                        <label>Octave Shift: <span class="help-icon">?<span class="help-tooltip">Shifts all notes up or down by whole octaves (12 semitones each). Use to place this stream in a higher or lower register than others.</span></span></label>
+                        <div class="slider-wrapper">
+                            <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                            <input type="range" class="octaveShift" min="-3" max="3" step="1" value="0">
+                            <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                        </div>
+                        <span class="value-display octaveVal">0</span>
                     </div>
-                    <span class="value-display spreadVal">1.0x</span>
+                    <div class="input-group">
+                        <label>Spread: <span class="help-icon">?<span class="help-tooltip">Stretches or compresses the interval between notes. 1.0 = normal diatonic scale (~2 octave range). Higher = wider jumps between digits; lower = notes cluster closer together.</span></span></label>
+                        <div class="slider-wrapper">
+                            <button type="button" class="slider-btn" data-dir="-1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg></button>
+                            <input type="range" class="spreadFactor" min="0.1" max="3.0" step="0.1" value="1.0">
+                            <button type="button" class="slider-btn" data-dir="1"><svg viewBox="0 0 24 24" width="12" height="12"><path fill="currentColor" d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></button>
+                        </div>
+                        <span class="value-display spreadVal">1.0x</span>
+                    </div>
                 </div>
             </div>
         </div>

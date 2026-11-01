@@ -535,13 +535,17 @@
 
     function updateDisplay(index) {
         const contextSize = 3;
-        let html = '';
+        let parts = [];
         for (let i = index - contextSize; i <= index + contextSize; i++) {
-            if (i < 0 || i >= piSequence.length) html += '&nbsp;';
-            else if (i === index) html += `<span class="highlight">${piSequence[i]}</span>`;
-            else html += piSequence[i];
+            if (i < 0 || i >= piSequence.length) parts.push('&nbsp;');
+            else if (i === index) parts.push(`<span class="highlight">${piSequence[i]}</span>`);
+            else parts.push(piSequence[i]);
         }
-        displayEl.innerHTML = (index === 0 && piSequence[0] === '3') ? `3.${html.substring(1)}` : html;
+        // At index 0 the highlighted digit is '3'; show it as '3.' followed by the next digits.
+        if (index === 0 && piSequence[0] === '3') {
+            parts[contextSize] = '<span class="highlight">3</span>.';
+        }
+        displayEl.innerHTML = parts.join('');
         if(noteInfo) {
             noteInfo.innerHTML = `Playing Digit: <span class="note-info-val">${piSequence[index] || ''}</span> | Streams Active: <span class="note-info-val">${streams.length}</span>`;
         }
