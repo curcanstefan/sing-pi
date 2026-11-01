@@ -543,7 +543,7 @@
         }
         displayEl.innerHTML = (index === 0 && piSequence[0] === '3') ? `3.${html.substring(1)}` : html;
         if(noteInfo) {
-            noteInfo.innerHTML = `Playing Digit: <span style="color:#00ff88">${piSequence[index] || ''}</span> | Streams Active: <span style="color:#00ff88">${streams.length}</span>`;
+            noteInfo.innerHTML = `Playing Digit: <span class="note-info-val">${piSequence[index] || ''}</span> | Streams Active: <span class="note-info-val">${streams.length}</span>`;
         }
     }
 
@@ -971,6 +971,52 @@
 
     document.getElementById('saveConfigBtn').addEventListener('click', saveConfig);
     document.getElementById('resetConfigBtn').addEventListener('click', resetConfig);
+
+    // Theme Management (Light / Dark / Auto)
+    const THEME_KEY = 'sing_pi_theme';
+    const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    function getThemePreference() {
+        try {
+            return localStorage.getItem(THEME_KEY) || 'auto';
+        } catch (e) {
+            return 'auto';
+        }
+    }
+
+    function applyTheme(pref) {
+        const effectiveTheme = pref === 'auto'
+            ? (themeMediaQuery.matches ? 'dark' : 'light')
+            : pref;
+        document.documentElement.setAttribute('data-theme', effectiveTheme);
+
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            const val = btn.getAttribute('data-theme-val');
+            btn.classList.toggle('active', val === pref);
+        });
+    }
+
+    function setThemePreference(pref) {
+        try {
+            localStorage.setItem(THEME_KEY, pref);
+        } catch (e) {}
+        applyTheme(pref);
+    }
+
+    themeMediaQuery.addEventListener('change', () => {
+        if (getThemePreference() === 'auto') {
+            applyTheme('auto');
+        }
+    });
+
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const val = btn.getAttribute('data-theme-val');
+            if (val) setThemePreference(val);
+        });
+    });
+
+    applyTheme(getThemePreference());
 
     loadConfig();
     updateDisplay(currentIndex);
