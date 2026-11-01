@@ -853,6 +853,37 @@
 
     addStreamBtn.addEventListener('click', () => createStream());
 
+    const CONSENT_KEY = 'sing_pi_gdpr_consent';
+    const CONFIG_KEY = 'sing_pi_config';
+
+    const gdprPopup = document.getElementById('gdprPopup');
+    const gdprAcceptBtn = document.getElementById('gdprAcceptBtn');
+
+    function checkGdprNotice() {
+        try {
+            if (!localStorage.getItem(CONSENT_KEY) && gdprPopup) {
+                gdprPopup.hidden = false;
+                requestAnimationFrame(() => {
+                    gdprPopup.classList.add('visible');
+                });
+            }
+        } catch (e) {}
+    }
+
+    if (gdprAcceptBtn) {
+        gdprAcceptBtn.addEventListener('click', () => {
+            try {
+                localStorage.setItem(CONSENT_KEY, 'true');
+            } catch (e) {}
+            if (gdprPopup) {
+                gdprPopup.classList.remove('visible');
+                setTimeout(() => {
+                    gdprPopup.hidden = true;
+                }, 250);
+            }
+        });
+    }
+
     function saveConfig() {
         const config = {
             startIndex: parseInt(startIndexInput.value, 10) || 0,
@@ -869,7 +900,7 @@
             }))
         };
         try {
-            localStorage.setItem('sing_pi_config', JSON.stringify(config));
+            localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
             showStatus('✓ Configuration saved to LocalStorage');
         } catch (e) {
             showStatus('Failed to save configuration');
@@ -878,7 +909,7 @@
 
     function loadConfig() {
         try {
-            const saved = localStorage.getItem('sing_pi_config');
+            const saved = localStorage.getItem(CONFIG_KEY);
             if (!saved) {
                 createStream();
                 return;
@@ -921,7 +952,7 @@
     function resetConfig() {
         applyConfig(DEFAULTS);
         try {
-            localStorage.removeItem('sing_pi_config');
+            localStorage.removeItem(CONFIG_KEY);
             showStatus('Restored default settings');
         } catch (e) {}
     }
@@ -943,3 +974,4 @@
 
     loadConfig();
     updateDisplay(currentIndex);
+    checkGdprNotice();
